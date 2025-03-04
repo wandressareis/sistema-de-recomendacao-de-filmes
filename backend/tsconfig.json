@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "outDir": "./dist", // A pasta de saída está correta
+    "rootDir": "./src", // A raiz do código TypeScript
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "src/**/*",  // Garante que todos os arquivos na pasta src sejam compilados
+    "models/**/*" // Se você usa "models" fora do src, adicione aqui
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
+

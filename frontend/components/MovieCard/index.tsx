@@ -3,7 +3,7 @@ import api from "../../app/service/api";
 import { GoHeart, GoHeartFill } from "react-icons/go";
 import type { Movie } from "types/movie";
 import StarRating from "components/StarRating";
-import './index.scss'
+import './index.scss';
 
 export interface Props {
     movie: Movie;
@@ -14,9 +14,18 @@ export default function MovieCard({ movie }: Props) {
     const [hovered, setHovered] = useState(true);
 
     const toggleLike = async () => {
+        const token = localStorage.getItem("token"); // Verifica se o usuário está autenticado
+        
+        if (!token) {
+            alert("Inscreva-se ou faça seu login para curtir filmes!");
+            return;
+        }
+
         if (!liked) {
             try {
-                await api.post(`/liked/${movie.id}`);
+                await api.post(`/liked/${movie.id}`, {}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
                 setLiked(true);
             } catch (error) {
                 console.error("Erro ao curtir o filme:", error);
@@ -45,9 +54,7 @@ export default function MovieCard({ movie }: Props) {
                     {movie.title}
                 </p>
                 {movie.vote_average > 0 && 
-                    <StarRating
-                        rating={movie.vote_average}
-                    />
+                    <StarRating rating={movie.vote_average} />
                 }
                 <div className="hidden-content" style={{ maxHeight: '100px', overflowY: 'auto' }}>
                     {movie.overview &&                     

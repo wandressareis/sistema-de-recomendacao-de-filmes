@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { json } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -12,6 +12,8 @@ const options_env = { path: '.env' };
 dotenv.config(options_env);
 
 const app = express();
+app.use(cors({origin: "http://localhost:5173"}));
+app.use(express.json());
 const port = process.env.PORT || 5000;
 
 // Conectando ao MongoDB

@@ -1,0 +1,59 @@
+.register-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #020617;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+}
+
+input {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    padding: 10px;
+    background-color: #ff4500;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #e03e00;
+}
+
+.error {
+    color: red;
+    margin-bottom: 10px;
+}
+
+.login-link {
+    margin-top: 15px;
+}
+
+.link {
+    color: #ff4500;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.link:hover {
+    color: #e03e00;
+}

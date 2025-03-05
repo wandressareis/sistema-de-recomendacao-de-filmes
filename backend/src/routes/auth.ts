@@ -7,18 +7,18 @@ const router = express.Router();
 
 // Registro de usuário
 router.post("/register", async (req: Request, res: Response): Promise<void> => {
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
   try {
-    const userExists = await User.findOne({ username });
+    const userExists = await User.findOne( {$or: [{ username }, { email }]});
     if (userExists) {
-      res.status(400).json({ message: "Usuário já existe." });
+      res.status(400).json({ message: "Usuário ou e-mail já cadastrados." });
       return;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ username, password: hashedPassword });
-
     await newUser.save();
+
     res.status(201).json({ message: "Usuário registrado com sucesso." });
   } catch (error) {
     res.status(500).json({ message: "Erro no servidor.", error });

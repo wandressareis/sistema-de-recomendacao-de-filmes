@@ -1,5 +1,5 @@
-import AuthForm from "../../components/Login";
+import Login from "../../components/Login";
 
 export default function LoginPage() {
-  return <AuthForm type="login" />;
+    return <Login />;
 }

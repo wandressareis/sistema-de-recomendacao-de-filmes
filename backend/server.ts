@@ -10,7 +10,6 @@ import likedRouter from './src/routes/liked';
 const options_env = { path: '.env' };
 
 dotenv.config(options_env);
-
 const app = express();
 app.use(cors({origin: "http://localhost:5173"}));
 app.use(express.json());

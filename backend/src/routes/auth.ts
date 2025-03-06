@@ -16,7 +16,7 @@ router.post("/register", async (req: Request, res: Response): Promise<void> => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, password: hashedPassword });
+    const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save();
 
     res.status(201).json({ message: "Usuário registrado com sucesso." });
@@ -25,6 +25,7 @@ router.post("/register", async (req: Request, res: Response): Promise<void> => {
   }
 });
 
+// Login do usuário
 router.post("/login", async (req: Request, res: Response): Promise<void> => {
   const { username, password } = req.body;
   try {
@@ -45,6 +46,11 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(500).json({ message: "Erro no servidor.", error });
   }
+});
+
+// Logout (simplesmente invalidando o token no frontend)
+router.post("/logout", (req: Request, res: Response) => {
+  res.json({ message: "Logout realizado com sucesso." });
 });
 
 export default router;

@@ -1,4 +1,4 @@
-import { Movie } from './src/models/Movie';
+import { Movie } from './models/Movie';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 

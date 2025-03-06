@@ -38,6 +38,7 @@ const mongoose_1 = __importStar(require("mongoose"));
 // Definindo o schema para o usuário
 const userSchema = new mongoose_1.Schema({
     username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     likedMovies: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Movie' }],
 }, { timestamps: true });

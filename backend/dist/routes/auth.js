@@ -19,11 +19,11 @@ const User_1 = require("../models/User");
 const router = express_1.default.Router();
 // Registro de usuário
 router.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
     try {
-        const userExists = yield User_1.User.findOne({ username });
+        const userExists = yield User_1.User.findOne({ $or: [{ username }, { email }] });
         if (userExists) {
-            res.status(400).json({ message: "Usuário já existe." });
+            res.status(400).json({ message: "Usuário ou e-mail já cadastrados." });
             return;
         }
         const hashedPassword = yield bcryptjs_1.default.hash(password, 10);

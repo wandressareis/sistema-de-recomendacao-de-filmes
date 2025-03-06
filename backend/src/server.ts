@@ -2,9 +2,9 @@ import express, { json } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import authRouter from './src/routes/auth';
-import movieRouter from './src/routes/movies';
-import likedRouter from './src/routes/liked';
+import authRouter from './routes/auth';
+import movieRouter from './routes/movies';
+import likedRouter from './routes/liked';
 
 
 const options_env = { path: '.env' };

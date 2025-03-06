@@ -13,15 +13,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const Movie_1 = require("../models/Movie");
+const axios_1 = __importDefault(require("axios"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const router = express_1.default.Router();
-// Rota para listar filmes
+const TMDB_API_KEY = process.env.TMDB_API_KEY;
 router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const movies = yield Movie_1.Movie.find();
+        const response = yield axios_1.default.get(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=1`);
+        const movies = response.data.results.map((movie) => ({
+            id: movie.id,
+            title: movie.title,
+            poster_path: movie.poster_path,
+            overview: movie.overview,
+            vote_average: movie.vote_average,
+        }));
         res.json(movies);
     }
     catch (error) {
+        console.error("Erro ao buscar filmes do TMDB:", error);
         res.status(500).json({ error: "Erro ao buscar filmes" });
     }
 }));

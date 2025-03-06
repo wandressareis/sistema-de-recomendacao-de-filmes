@@ -37,10 +37,11 @@ exports.Movie = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 // Definindo o schema para o filme
 const movieSchema = new mongoose_1.Schema({
+    id: { type: Number, required: true },
     title: { type: String, required: true },
-    description: { type: String, required: true },
-    releaseDate: { type: Date, required: true },
-    genre: { type: String, required: true },
+    poster_path: { type: String, required: true },
+    overview: { type: String, required: true },
+    vote_average: { type: Number, required: true },
 }, { timestamps: true });
 // Criando o modelo Movie com base no schema
 const Movie = mongoose_1.default.model('Movie', movieSchema);

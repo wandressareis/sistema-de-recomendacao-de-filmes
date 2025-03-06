@@ -7,7 +7,7 @@ import {
   ScrollRestoration,
 } from "react-router";
 
-import Navbar from "../components/NavBar";
+import Navbar from "../components/Navbar";
 
 import type { Route } from "./+types/root";
 import "./app.scss";

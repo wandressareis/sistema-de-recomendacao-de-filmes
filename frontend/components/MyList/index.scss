@@ -1,0 +1,13 @@
+.mylist-button {
+    background-color: #6046ff;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: #5038d1;
+    }
+}

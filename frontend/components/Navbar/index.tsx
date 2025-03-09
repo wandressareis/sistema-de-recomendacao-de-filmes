@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { BiLogIn, BiLogOut, BiHomeAlt } from "react-icons/bi";
+import { PiPopcornDuotone } from "react-icons/pi"; // Ícone de pipoca
 import "./index.scss";
 import { useEffect, useState } from "react";
 
@@ -23,8 +24,8 @@ export default function Navbar() {
 
     return (
         <nav className="navbar">
-            <h1 className="page-title" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>Filmes</h1>
-            
+            <h1 className="page-title" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>Pipoca</h1>
+
             {/* Botão de Redirecionamento para a página principal nas páginas de login e cadastro */}
             {isAuthPage && (
                 <button className="home-button" onClick={() => navigate("/")}>
@@ -34,17 +35,24 @@ export default function Navbar() {
             )}
 
             {!isAuthPage && (
-                isLoggedIn ? (
-                    <button className="logout-button" onClick={handleLogout}>
-                        <h4 className="inscricao">Sair</h4>
-                        <BiLogOut className="logout-icon" />
-                    </button>
-                ) : (
-                    <button className="login-button" onClick={() => navigate("/login")}>
-                        <h4 className="inscricao">Login</h4>
-                        <BiLogIn className="login-icon" />
-                    </button>
-                )
+                <>
+                    {isLoggedIn && (
+                        <button className="mylist-button" onClick={() => navigate("/mylist")}>
+                            Minha Lista
+                        </button>
+                    )}
+                    {isLoggedIn ? (
+                        <button className="logout-button" onClick={handleLogout}>
+                            <h4 className="inscricao">Sair</h4>
+                            <BiLogOut className="logout-icon" />
+                        </button>
+                    ) : (
+                        <button className="login-button" onClick={() => navigate("/login")}>
+                            <h4 className="inscricao">Login</h4>
+                            <BiLogIn className="login-icon" />
+                        </button>
+                    )}
+                </>
             )}
         </nav>
     );

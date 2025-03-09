@@ -5,19 +5,21 @@ interface AuthenticatedRequest extends Request {
   user?: { id: string };
 }
 
-const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
-    return res.status(401).json({ message: "Acesso negado. Token não fornecido." });
+    res.status(401).json({ message: "Acesso negado. Token não fornecido." });
+    return; // Adicionando return explícito
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
     req.user = { id: decoded.userId };
-    next();
+    next(); // Sempre chama next() se passar na verificação
   } catch (error) {
     res.status(401).json({ message: "Token inválido." });
+    return; // Adicionando return explícito
   }
 };
 

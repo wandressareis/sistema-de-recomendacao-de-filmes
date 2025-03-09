@@ -5,18 +5,52 @@
     overflow: hidden;
     position: relative;
 
-    .like-button {
+    .movie-buttons {
         position: absolute;
         top: 10px;
         right: 10px;
+        display: flex;
+        gap: 8px; // Espaço entre os botões
+        opacity: 0; // Inicialmente invisível
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    .add-button, .like-button {
         background: none;
         border: none;
         cursor: pointer;
-        transition: all .6s;
+        transition: all 0.3s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: relative; // Levemente reduzido
 
-        &.hovered {
-            transform: scale(1.2);
-        }
+    }
+
+    .add-button:hover, .like-button:hover {
+        transform: scale(1.2);
+    }
+
+    // Estilização das legendas (tooltip)
+    .tooltip {
+        position: absolute;
+        bottom: -25px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 4px 8px;
+        font-size: 12px;
+        border-radius: 4px;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .add-button:hover .tooltip,
+    .like-button:hover .tooltip {
+        opacity: 1;
+        visibility: visible;
+        bottom: -30px;
     }
 
     .movie-poster img {
@@ -24,7 +58,7 @@
         height: 100%;
         object-fit: cover;
         opacity: 1;
-        transition: opacity .6s;
+        transition: opacity 0.6s;
     }
 
     .movie-infos {
@@ -50,7 +84,7 @@
             margin-top: 8px;
             height: 0px;
             opacity: 0;
-            transition: all .6s;
+            transition: all 0.6s;
 
             .btn-default {
                 background-color: #6046ff;
@@ -64,11 +98,20 @@
             }
         }
     }
+    
     &:hover {
         cursor: pointer;
 
         .movie-poster img {
             opacity: 0.5;
+        }
+
+        .movie-buttons {
+            opacity: 1; // Torna os botões visíveis ao passar o mouse
+        }
+
+        .like-button, .add-button {
+            transform: scale(1); // Retorna ao tamanho normal no hover do card
         }
 
         .hidden-content {

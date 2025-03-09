@@ -6,8 +6,18 @@
     justify-content: space-between;
 
     .page-title {
+        display: flex;
+        align-items: center;
+        // font-size: 1.8rem;
+        font-weight: bold;
+        cursor: pointer;
         color: #fff;
-        margin: 0;
+        gap: 10px; /* Espaço entre o ícone e o texto */
+    }
+
+    .popcorn-icon {
+        font-size: 2rem;
+        color: #ff4500; /* Cor amarela para destacar a pipoca */
     }
 
     button {
@@ -32,18 +42,25 @@
             font-size: 24px;
         }
 
+        button:hover {
+            opacity: 0.8;
+    }
+
         .logout-icon {
             color: #fff;
             font-size: 24px;
         }
+        button:hover {
+            opacity: 0.8;
+    }
         
         .home-icon {
             color: #fff;
             font-size: 24px;
+
         }
         
-
-    button:hover {
-        opacity: 0.8;
+        button:hover {
+            opacity: 0.8;
     }
 }

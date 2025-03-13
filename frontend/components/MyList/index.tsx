@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../../app/service/api";
 import MovieCard from "components/MovieCard";
-import { Movie } from "types/movie";
+import type { Movie } from "types/movie";
 import './index.scss';
 
 export default function MyList() {

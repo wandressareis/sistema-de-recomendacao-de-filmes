@@ -1,83 +1,95 @@
+// frontend/components/MovieList/index.tsx
 import { useEffect, useState } from "react";
-import api from "../../app/service/api"; // Importa a API configurada
+import api from "../../app/service/api";
 import MovieCard from "components/MovieCard";
 import type { Movie } from "types/movie";
 import "./index.scss";
 
 export default function MovieList() {
-    const [movies, setMovies] = useState<Movie[]>([]);
-    const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
-    const [likedMovies, setLikedMovies] = useState<number[]>([]);
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [personalRecommendations, setPersonalRecommendations] = useState<Movie[]>([]);
+  const [collaborativeRecommendations, setCollaborativeRecommendations] = useState<Movie[]>([]);
+  const [likedMovies, setLikedMovies] = useState<number[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        setIsLoggedIn(!!token); // Verifica se o usuário está logado
-        getMovies();
-        if (token) fetchRecommendations(); // Busca recomendações ao iniciar, se logado
-    }, []);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+    getMovies();
+    if (token) fetchRecommendations();
+  }, []);
 
-    const getMovies = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const response = token 
-                ? await api.get("api/movies/logado") 
-                : await api.get("api/movies");
-            
-            setMovies(response.data);
+  const getMovies = async () => {
+    try {
+      const token = localStorage.getItem("token");  
+      const response = token
+        ? await api.get("api/movies/logado")
+        : await api.get("api/movies");
 
-            if (token) {
-                const liked = response.data
-                    .filter((movie: Movie) => movie.liked)
-                    .map((movie: Movie) => movie.id);
-                setLikedMovies(liked);
-            }
-        } catch (error) {
-            console.error("Erro ao buscar filmes:", error);
-        }
-    };
+      setMovies(response.data);
 
-    const fetchRecommendations = async () => {
-        try {
-            const response = await api.get("api/movies/recommendations", {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-            });
-            setRecommendedMovies(response.data);
-        } catch (error) {
-            console.error("Erro ao buscar recomendações:", error);
-        }
-    };
+      if (token) {
+        const liked = response.data
+          .filter((movie: Movie) => movie.liked)
+          .map((movie: Movie) => movie.id);
+        setLikedMovies(liked);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar filmes:", error);
+    }
+  };
 
-    return (
-        <div className="movie-container">
-            {!isLoggedIn && <h1 className="popular-title">Filmes Populares</h1>}
-            <ul className="movie-list">
-                {movies.map((movie) => (
-                    <MovieCard 
-                        key={movie.id} 
-                        movie={movie} 
-                        onLike={() => {
-                            fetchRecommendations(); // Atualiza recomendações ao curtir um filme
-                            setLikedMovies([...likedMovies, movie.id]); // Atualiza lista de curtidos
-                        }} 
-                    />
-                ))}
-            </ul>
+  const fetchRecommendations = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.get("api/movies/recommendations", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // A resposta contém: { personalRecommendations, collaborativeRecommendations }
+      setPersonalRecommendations(response.data.personalRecommendations || []);
+      setCollaborativeRecommendations(response.data.collaborativeRecommendations || []);
+    } catch (error) {
+      console.error("Erro ao buscar recomendações:", error);
+    }
+  };
 
-            {likedMovies.length > 0 && recommendedMovies.length > 0 && (
-                <>
-                    <h1 className="recommended-title">Recomendações para você</h1>
-                    <ul className="movie-list">
-                        {recommendedMovies.map((movie) => (
-                            <MovieCard 
-                                key={movie.id} 
-                                movie={movie} 
-                                onLike={fetchRecommendations} 
-                            />
-                        ))}
-                    </ul>
-                </>
-            )}
-        </div>
-    );
+  return (
+    <div className="movie-container">
+      {!isLoggedIn && <h1 className="popular-title">Filmes Populares</h1>}
+      <ul className="movie-list">
+        {movies.map((movie) => (
+          <MovieCard
+            key={movie.id}
+            movie={movie}
+            onLike={() => {
+              fetchRecommendations();
+              setLikedMovies([...likedMovies, movie.id]);
+            }}
+          />
+        ))}
+      </ul>
+
+      {personalRecommendations.length > 0 && (
+        <>
+          <h1 className="recommended-title">Suas Recomendações</h1>
+          <ul className="movie-list">
+            {personalRecommendations.map((movie) => (
+              <MovieCard key={movie.id} movie={movie} onLike={fetchRecommendations} />
+            ))}
+          </ul>
+        </>
+      )}
+
+      {collaborativeRecommendations.length > 0 && (
+        <>
+          <h1 className="recommended-title">Recomendações Populares</h1>
+          <ul className="movie-list">
+            {collaborativeRecommendations.map((movie) => (
+              <MovieCard key={movie.id} movie={movie} onLike={fetchRecommendations} />
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  );
 }

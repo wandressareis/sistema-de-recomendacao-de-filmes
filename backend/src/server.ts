@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import authRouter from './routes/auth';
 import movieRouter from './routes/movies';
 import likedRouter from './routes/like';
+import myListRouter from './routes/myList';
 
 // Carrega as variáveis de ambiente do arquivo .env
 dotenv.config({ path: '.env' });
@@ -25,7 +26,7 @@ mongoose.connect(process.env.MONGODB_URI!)
 app.use('/api/auth', authRouter);
 app.use('/api/movies', movieRouter);
 app.use('/api/liked', likedRouter);
-
+app.use('/api/myList', myListRouter);
 // Iniciar o servidor
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);

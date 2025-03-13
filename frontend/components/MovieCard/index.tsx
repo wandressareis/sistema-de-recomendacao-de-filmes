@@ -1,61 +1,69 @@
-import { useState } from "react";
+// frontend/components/MovieCard/index.tsx
+import { useState, useEffect } from "react";
 import api from "../../app/service/api";
 import { GoHeart, GoHeartFill } from "react-icons/go";
-import { BsPlusCircle, BsPlusCircleFill } from "react-icons/bs"; // Ícones do botão adicionar
+import { BsPlusCircle, BsPlusCircleFill } from "react-icons/bs";
 import type { Movie } from "types/movie";
 import StarRating from "components/StarRating";
 import "./index.scss";
-import { useEffect } from "react";
 
 export interface Props {
     movie: Movie;
-    onLike: (id: number) => void; // Nova prop para atualizar recomendações
+    onLike?: (id: number) => void;
 }
 
 export default function MovieCard({ movie, onLike }: Props) {
     const [added, setAdded] = useState(false);
     const [liked, setLiked] = useState(false);
-    const [hovered, setHovered] = useState(true);
+    const [hovered, setHovered] = useState(false);
 
-    const token = localStorage.getItem("token"); // Verifica se o usuário está autenticado
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
-            setLiked(movie.liked)
+            setLiked(movie.liked);
         }
-    }, []);
+        // Opcional: você pode recuperar o estado "added" se essa informação estiver disponível no objeto "movie"
+    }, [movie.liked]);
 
     const toggleAdd = async () => {
+        const token = localStorage.getItem("token");
         if (!token) {
-            alert("Inscreva-se ou faça seu login para adicionar filmes!");
+            alert("Faça login para adicionar filmes à sua lista!");
             return;
         }
-
         try {
-            await api.post(`/added/${movie.id}`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            if (added) {
+                // Se já está na lista, remove
+                await api.delete(`/api/mylist/${movie.id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            } else {
+                // Se não está na lista, adiciona
+                await api.post(`/api/mylist/`, { id: movie.id }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+            }
             setAdded(!added);
         } catch (error) {
-            console.error("Erro ao adicionar o filme:", error);
+            console.error("Erro ao adicionar/remover filme da lista:", error);
         }
     };
+
     const toggleLike = async () => {
+        const token = localStorage.getItem("token");
         if (!token) {
             alert("Inscreva-se ou faça seu login para curtir filmes!");
             return;
         }
-    
         try {
             if (liked) {
-                // Se já curtiu, então remove o like
                 await api.delete(`/api/liked/${movie.id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
+                    headers: { Authorization: `Bearer ${token}` }
                 });
             } else {
-                // Se ainda não curtiu, então adiciona o like
                 await api.post(`/api/liked/`, { id: movie.id }, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -63,14 +71,12 @@ export default function MovieCard({ movie, onLike }: Props) {
                     }
                 });
             }
-    
             setLiked(!liked);
-            if (onLike) onLike(movie.id); // Atualiza as recomendações
+            if (onLike) onLike(movie.id);
         } catch (error) {
             console.error("Erro ao curtir/remover like do filme:", error);
         }
     };
-    
 
     return (
         <li className="movie-card">
@@ -80,7 +86,6 @@ export default function MovieCard({ movie, onLike }: Props) {
                     alt={movie.title}
                 />
                 <div className="movie-buttons">
-                    {/* Botão Adicionar */}
                     <button 
                         className={`add-button ${hovered ? "hovered" : ""}`}
                         onClick={toggleAdd}
@@ -90,7 +95,6 @@ export default function MovieCard({ movie, onLike }: Props) {
                         {added ? <BsPlusCircleFill color="green" size={24} /> : <BsPlusCircle color="white" size={24} />}
                         <span className="tooltip">Adicionar à lista</span>
                     </button>
-                    {/* Botão Curtir */}
                     <button 
                         className={`like-button ${hovered ? "hovered" : ""}`}
                         onClick={toggleLike} 

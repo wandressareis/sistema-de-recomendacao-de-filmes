@@ -1,3 +1,4 @@
+// backend/src/routes/like.ts
 import { Router, Response } from "express";
 import mongoose from "mongoose";
 import axios from "axios";
@@ -12,12 +13,12 @@ const TMDB_API_KEY = process.env.TMDB_API_KEY;
 
 likedRouter.post("/", authMiddleware, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const userId = req.user?.id;
-  const { id } = req.body; // id deve ser enviado pelo frontend
-  
+  const { id } = req.body; // id do filme
+
   if (!id) {
     res.status(400).json({ message: "ID do filme é obrigatório." });
     return;
-  } 
+  }
 
   // Verifica se o ID é válido no MongoDB
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -25,20 +26,20 @@ likedRouter.post("/", authMiddleware, async (req: AuthenticatedRequest, res: Res
     return;
   }
 
-  
   try {
-    const response = await axios.get(
+    // Valida o filme com a API do TMDB
+    await axios.get(
       `https://api.themoviedb.org/3/movie/${id}?language=pt-br&api_key=${TMDB_API_KEY}`
     );
-    
-    const likeFinded = await Like.findOne({ user_id: userId, movie_id: id }) 
+
+    const likeFinded = await Like.findOne({ user_id: userId, movie_id: id });
 
     if (likeFinded) {
       res.status(500).json({ message: "O filme já foi curtido." });
       return;
-    } 
+    }
 
-    const like = await Like.create({ user_id: userId, movie_id: id});
+    const like = await Like.create({ user_id: userId, movie_id: id, genres: [] });
     like.save();
 
     console.log(like);
@@ -47,7 +48,6 @@ likedRouter.post("/", authMiddleware, async (req: AuthenticatedRequest, res: Res
     console.error("Erro ao curtir o filme:", error);
     res.status(500).json({ message: "Erro interno do servidor." });
   }
-
 });
 
 likedRouter.delete("/:id", authMiddleware, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
@@ -73,7 +73,5 @@ likedRouter.delete("/:id", authMiddleware, async (req: AuthenticatedRequest, res
     res.status(500).json({ message: "Erro interno do servidor." });
   }
 });
-
-
 
 export default likedRouter;

@@ -39,7 +39,7 @@ export default function MovieList() {
 
     const fetchRecommendations = async () => {
         try {
-            const response = await api.get("/api/movies/recommend-by-genre", {
+            const response = await api.get("api/movies/recommendations", {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
             });
             setRecommendedMovies(response.data);
@@ -47,7 +47,6 @@ export default function MovieList() {
             console.error("Erro ao buscar recomendações:", error);
         }
     };
-    
 
     return (
         <div className="movie-container">

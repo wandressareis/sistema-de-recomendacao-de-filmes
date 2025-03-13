@@ -41,57 +41,67 @@ router.get("/logado", authMiddleware, async (req: AuthenticatedRequest, res: Res
     }
 });
 
-router.get("/recommend-by-genre", authMiddleware, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+router.get("/", async (req, res) => {
+    
+    try {
+        const response = await axios.get(
+            `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=1`
+        );
+
+        const movies = response.data.results.map((movie: any) => ({
+            id: movie.id,
+            title: movie.title,
+            poster_path: movie.poster_path,
+            overview: movie.overview,
+            vote_average: movie.vote_average,
+            liked: false,
+        }));
+ 
+        res.json(movies);
+    } catch (error) {
+        console.error("Erro ao buscar filmes do TMDB:", error);
+        res.status(500).json({ error: "Erro ao buscar filmes" });
+    }
+});
+
+router.get("/recommendations", authMiddleware, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const userId = req.user?.id;
 
     try {
-        // Buscar os filmes curtidos pelo usuário
-        const likes = await Like.find({ user_id: userId });
+        // Buscar filmes curtidos pelo usuário
+        const likedMovies = await Like.find({ user_id: userId });
 
-        if (likes.length === 0) {
-            res.json([]); // Apenas envia a resposta sem usar `return`
+        if (likedMovies.length === 0) {
+            res.json([]); // Se não houver likes, retorna uma lista vazia
             return;
         }
 
-        // Buscar detalhes dos filmes curtidos
-        const likedMoviesDetails = await Promise.all(
-            likes.map(async (like) => {
-                const response = await axios.get(
-                    `https://api.themoviedb.org/3/movie/${like.movie_id}?api_key=${TMDB_API_KEY}&language=pt-BR`
-                );
-                return response.data;
-            })
-        );
+        const uniqueRecommendedMovies = new Map();
 
-        // Contar quantas vezes cada gênero foi curtido
-        const genreCount: Record<number, number> = {};
-        likedMoviesDetails.forEach((movie) => {
-            movie.genres.forEach((genre: { id: number }) => {
-                genreCount[genre.id] = (genreCount[genre.id] || 0) + 1;
-            });
-        });
-
-        // Identificar os 2 gêneros mais curtidos
-        const topGenres = Object.entries(genreCount)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 2)
-            .map(([genreId]) => genreId);
-
-        // Buscar filmes populares dentro dos gêneros favoritos
-        const recommendedMovies: any[] = [];
-        for (const genreId of topGenres) {
+        // Para cada filme curtido, busca
+        // r recomendações
+        for (const like of likedMovies) {
             const response = await axios.get(
-                `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=pt-BR&sort_by=popularity.desc&with_genres=${genreId}`
+                `https://api.themoviedb.org/3/movie/${like.movie_id}/recommendations?api_key=${TMDB_API_KEY}&language=pt-BR&page=1`
             );
-            recommendedMovies.push(...response.data.results);
+
+            response.data.results.forEach((movie: any) => {
+                if (!uniqueRecommendedMovies.has(movie.id)) {
+                    uniqueRecommendedMovies.set(movie.id, {
+                        id: movie.id,
+                        title: movie.title,
+                        poster_path: movie.poster_path,
+                        overview: movie.overview,
+                        vote_average: movie.vote_average,
+                    });
+                }
+            });
         }
 
-        // Remover duplicatas e enviar resposta
-        const uniqueMovies = Array.from(new Map(recommendedMovies.map((movie) => [movie.id, movie])).values());
-        res.json(uniqueMovies);
+        res.json(Array.from(uniqueRecommendedMovies.values())); // Retorna os filmes recomendados sem duplicação
     } catch (error) {
-        console.error("Erro ao buscar recomendações por gênero:", error);
-        res.status(500).json({ error: "Erro ao buscar recomendações" });
+        console.error("Erro ao buscar recomendações personalizadas:", error);
+        res.status(500).json({ error: "Erro ao buscar recomendações personalizadas" });
     }
 });
 

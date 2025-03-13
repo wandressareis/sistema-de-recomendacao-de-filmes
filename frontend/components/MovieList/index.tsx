@@ -55,41 +55,39 @@ export default function MovieList() {
 
   return (
     <div className="movie-container">
-      {!isLoggedIn && <h1 className="popular-title">Filmes Populares</h1>}
-      <ul className="movie-list">
-        {movies.map((movie) => (
-          <MovieCard
-            key={movie.id}
-            movie={movie}
-            onLike={() => {
-              fetchRecommendations();
-              setLikedMovies([...likedMovies, movie.id]);
-            }}
-          />
-        ))}
-      </ul>
+      {!isLoggedIn && (
+        <div className="section popular-section">
+          <h1 className="section-title">Filmes Populares</h1>
+          <ul className="movie-list">
+            {movies.map((movie) => (
+              <MovieCard key={movie.id} movie={movie} onLike={fetchRecommendations} />
+            ))}
+          </ul>
+        </div>
+      )}
 
       {personalRecommendations.length > 0 && (
-        <>
-          <h1 className="recommended-title">Suas Recomendações</h1>
+        <div className="section personal-section">
+          <h1 className="section-title">Suas Recomendações</h1>
           <ul className="movie-list">
             {personalRecommendations.map((movie) => (
               <MovieCard key={movie.id} movie={movie} onLike={fetchRecommendations} />
             ))}
           </ul>
-        </>
+        </div>
       )}
 
       {collaborativeRecommendations.length > 0 && (
-        <>
-          <h1 className="recommended-title">Recomendações Populares</h1>
+        <div className="section collaborative-section">
+          <h1 className="section-title">Recomendações Populares</h1>
           <ul className="movie-list">
             {collaborativeRecommendations.map((movie) => (
               <MovieCard key={movie.id} movie={movie} onLike={fetchRecommendations} />
             ))}
           </ul>
-        </>
+        </div>
       )}
     </div>
+
   );
 }

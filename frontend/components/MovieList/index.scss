@@ -1,16 +1,40 @@
-.popular-title {
+.movie-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px; // Espaço maior entre as seções
+}
+
+.section {
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.popular-section {
+    color: #fff;
+}
+
+.personal-section {
+    color: #fff;
+}
+
+.collaborative-section {
+    color: #fff;
+}
+
+.section-title {
     text-align: center;
     font-size: 2rem;
-    padding: 20px;
-    color: #fff;   
-    gap: 10px; 
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 
 .movie-list {
     padding: 24px 3%;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
+    gap: 20px;
     list-style: none;
     width: 100%;
 }

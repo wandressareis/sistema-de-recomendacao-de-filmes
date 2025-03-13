@@ -94,7 +94,7 @@ router.get("/recommendations", authMiddleware, async (req: AuthenticatedRequest,
                     }
                 });
             }
-            personalRecommendations = Array.from(uniqueRecommendedMovies.values()).slice(0, 14); // Limita a 14 filmes
+            personalRecommendations = Array.from(uniqueRecommendedMovies.values()).slice(0, 24); // Limita a 24 filmes
         }
 
         // ***** Recomendações Colaborativas *****
@@ -107,7 +107,7 @@ router.get("/recommendations", authMiddleware, async (req: AuthenticatedRequest,
                 }
             },
             { $sort: { count: -1 } },
-            { $limit: 14 } // Limita aos 14 filmes mais curtidos
+            { $limit: 24 } // Limita aos 24 filmes mais curtidos
         ]);
 
         // Exclui os filmes que o usuário já curtiu
@@ -131,8 +131,8 @@ router.get("/recommendations", authMiddleware, async (req: AuthenticatedRequest,
         });
         const collaborativeRecommendations = await Promise.all(collaborativePromises);
 
-        // Limita as recomendações colaborativas para 14
-        const limitedCollaborativeRecommendations = collaborativeRecommendations.slice(0, 14);
+        // Limita as recomendações colaborativas para 24
+        const limitedCollaborativeRecommendations = collaborativeRecommendations.slice(0, 24);
 
         // Retorna as duas listas de recomendações
         res.json({

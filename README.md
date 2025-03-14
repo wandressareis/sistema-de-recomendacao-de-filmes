@@ -2,7 +2,7 @@
 
 ## Descrição
 
-Este projeto tem como objetivo criar um sistema de recomendação de filmes, utilizando dados de preferências dos usuários para sugerir filmes. Ele foi desenvolvido como parte de um projeto acadêmico, com o uso de tecnologias para backend e frontend.
+Este projeto tem como objetivo criar um sistema de recomendação de filmes, utilizando dados de preferências dos usuários para sugerir filmes. Ele foi desenvolvido como parte de um projeto acadêmico.
 
 ## Tecnologias Utilizadas
 

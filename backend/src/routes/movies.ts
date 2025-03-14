@@ -43,28 +43,47 @@ router.get("/logado", authMiddleware, async (req: AuthenticatedRequest, res: Res
     }
 });
 
-// Endpoint para usuários não logados: obtém filmes populares
+// Endpoint para usuários não logados: retorna os filmes mais curtidos na plataforma
 router.get("/", async (req, res) => {
     try {
-        const response = await axios.get(
-            `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=1`
-        );
+        // Agrupa os likes de todos os usuários por movie_id e conta quantas curtidas cada filme recebeu
+        const aggregatedLikes = await Like.aggregate([
+            {
+                $group: {
+                    _id: "$movie_id",
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { count: -1 } },
+            { $limit: 24 } // Limita aos 24 filmes mais curtidos
+        ]);
 
-        const movies = response.data.results.map((movie: any) => ({
-            id: movie.id,
-            title: movie.title,
-            poster_path: movie.poster_path,
-            overview: movie.overview,
-            vote_average: movie.vote_average,
-            liked: false,
-        }));
+        // Busca os detalhes de cada filme na API do TMDB
+        const collaborativePromises = aggregatedLikes.map(async (item) => {
+            const response = await axios.get(
+                `https://api.themoviedb.org/3/movie/${item._id}?language=pt-BR&api_key=${TMDB_API_KEY}`
+            );
+            const movie = response.data;
+            return {
+                id: movie.id,
+                title: movie.title,
+                poster_path: movie.poster_path,
+                overview: movie.overview,
+                vote_average: movie.vote_average,
+                likeCount: item.count,
+                liked: false, // Usuários não logados não têm filmes marcados como curtidos
+            };
+        });
 
-        res.json(movies);
+        const collaborativeRecommendations = await Promise.all(collaborativePromises);
+
+        res.json(collaborativeRecommendations);
     } catch (error) {
-        console.error("Erro ao buscar filmes do TMDB:", error);
+        console.error("Erro ao buscar filmes mais curtidos:", error);
         res.status(500).json({ error: "Erro ao buscar filmes" });
     }
 });
+
 
 // Endpoint de recomendações: retorna tanto as personalizadas quanto as colaborativas
 router.get("/recommendations", authMiddleware, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
@@ -72,16 +91,17 @@ router.get("/recommendations", authMiddleware, async (req: AuthenticatedRequest,
 
     try {
         // ***** Recomendações Personalizadas *****
-        const likedMovies = await Like.find({ user_id: userId });
+        const likedMovies = await Like.find({ user_id: userId }).sort({ createdAt: -1 }); // Ordena pelos mais recentes
         let personalRecommendations = [];
-        
+
         if (likedMovies.length > 0) {
             const uniqueRecommendedMovies = new Map();
-            // Para cada filme curtido, busca recomendações via TMDB
+            // Para cada filme curtido (começando pelos mais recentes), busca recomendações via TMDB
             for (const like of likedMovies) {
                 const response = await axios.get(
                     `https://api.themoviedb.org/3/movie/${like.movie_id}/recommendations?api_key=${TMDB_API_KEY}&language=pt-BR&page=1`
                 );
+
                 response.data.results.forEach((movie: any) => {
                     if (!uniqueRecommendedMovies.has(movie.id)) {
                         uniqueRecommendedMovies.set(movie.id, {
@@ -94,7 +114,7 @@ router.get("/recommendations", authMiddleware, async (req: AuthenticatedRequest,
                     }
                 });
             }
-            personalRecommendations = Array.from(uniqueRecommendedMovies.values()).slice(0, 24); // Limita a 24 filmes
+            personalRecommendations = Array.from(uniqueRecommendedMovies.values()).slice(0, 24); // Mantém o limite de 24 filmes
         }
 
         // ***** Recomendações Colaborativas *****

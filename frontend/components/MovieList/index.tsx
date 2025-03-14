@@ -57,7 +57,7 @@ export default function MovieList() {
     <div className="movie-container">
       {!isLoggedIn && (
         <div className="section popular-section">
-          <h1 className="section-title">Filmes Populares</h1>
+          <h1 className="section-title">Filmes Mais Curtidos</h1>
           <ul className="movie-list">
             {movies.map((movie) => (
               <MovieCard key={movie.id} movie={movie} onLike={fetchRecommendations} />
@@ -79,7 +79,7 @@ export default function MovieList() {
 
       {collaborativeRecommendations.length > 0 && (
         <div className="section collaborative-section">
-          <h1 className="section-title">Recomendações Populares</h1>
+          <h1 className="section-title">Filmes Mais Curtidos</h1>
           <ul className="movie-list">
             {collaborativeRecommendations.map((movie) => (
               <MovieCard key={movie.id} movie={movie} onLike={fetchRecommendations} />

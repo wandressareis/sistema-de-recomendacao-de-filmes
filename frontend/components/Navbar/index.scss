@@ -8,59 +8,83 @@
     .page-title {
         display: flex;
         align-items: center;
-        // font-size: 1.8rem;
         font-weight: bold;
         cursor: pointer;
         color: #fff;
-        gap: 10px; /* Espaço entre o ícone e o texto */
+        gap: 10px;
     }
 
     .popcorn-icon {
         font-size: 2rem;
-        color: #ff4500; /* Cor amarela para destacar a pipoca */
+        color: #ff4500;
     }
 
     button {
         display: flex;
         align-items: center;
         gap: 4px;
-        background: none;
-        border: none;
+        background: transparent; /* Fundo transparente por padrão */
+        border: 2px solid #fff; /* Borda branca */
         cursor: pointer;
         padding: 12px 20px;
         color: #fff;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        transition: background-color 0.3s, border-color 0.3s;
     }
 
-        .inscricao {
-            color: #fff;
-            font-size: 16px;
-            margin: 0;
-        }
-
-        .login-icon {
-            color: #fff;
-            font-size: 24px;
-        }
-
-        button:hover {
-            opacity: 0.8;
+    .inscricao {
+        margin: 0;
     }
 
-        .logout-icon {
-            color: #fff;
-            font-size: 24px;
-        }
-        button:hover {
-            opacity: 0.8;
+    .login-icon, .logout-icon, .home-icon {
+        color: #fff;
+        font-size: 24px;
     }
-        
-        .home-icon {
-            color: #fff;
-            font-size: 24px;
 
+    /* Efeito de hover */
+    button:hover {
+        background-color: #ff4500; /* Fica laranja quando o mouse passa por cima */
+        border-color: #ff4500; /* Borda também fica laranja */
+    }
+
+    /* Estilo para o botão 'Minha Lista' */
+    .mylist-button {
+        &:hover {
+            background-color: #ff4500;
+            border-color: #ff4500;
         }
-        
-        button:hover {
-            opacity: 0.8;
+    }
+
+    /* Estilo para o botão 'Sair' */
+    .logout-button {
+        &:hover {
+            background-color: #ff4500;
+            border-color: #ff4500;
+        }
+    }
+
+    /* Estilo para o botão 'Login' */
+    .login-button {
+        &:hover {
+            background-color: #ff4500;
+            border-color: #ff4500;
+        }
+    }
+
+    /* Estilo para o botão 'Home' */
+    .home-button {
+        &:hover {
+            background-color: #ff4500;
+            border-color: #ff4500;
+        }
+    }
+
+    /* Contêiner para os botões 'Minha Lista' e 'Sair' lado a lado */
+    .action-buttons {
+        display: flex;
+        gap: 12px; /* Espaço entre os botões */
+        align-items: center;
     }
 }
